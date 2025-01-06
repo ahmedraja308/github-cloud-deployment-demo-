@@ -1,17 +1,17 @@
-# Use the official Python image
+# Use the official Python image as a parent image
 FROM python:3.10-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Install dependencies
+# Set the working directory
 WORKDIR /app
-COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the app code
-COPY . .
+# Copy the current directory contents into the container
+COPY . /app
 
-# Specify the command to run the app
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+# Install any required Python packages
+RUN pip install --no-cache-dir flask gunicorn
+
+# Expose port 8080 for Cloud Run
+EXPOSE 8080
+
+# Run the app with Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
